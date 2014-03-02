@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# id3-cover
+# By Brian Carter
+# robotmachine@gmail.com
+# 
+# Attaches cover artwork to ID3 tags.
+# Retrieves missing covers and resizes.
+#
+## Dependencies:
+# * eyeD3 <http://eyed3.nicfit.net>
+# * Image Magick <http://www.imagemagick.org>
+# * glyr <https://github.com/sahib/glyr>
+#
+## Find Existing Cover
+#
+# Looks for cover.jpg|png or folder.jpg|png
+coverfile=cover.jpg
+if [ ! -f $coverfile ] ; then
+coverfile=cover.png
+fi
+if [ ! -f $coverfile ] ; then
+coverfile=folder.jpg
+fi
+if [ ! -f $coverfile ] ; then
+coverfile=folder.png
+fi
+if [ ! -f $coverfile ] ; then
+# If no file can be found, it will use glyrc to try and find it.
+# This assumes that the album is in a folder titles "YYYY Title of Album" within a "Name of Artist" folder.
+# ie. ~/Music/The Residents/1974 Meet the Residents
+# If your album folder does not have the year, remove the | sed 's/.....\(.*\)/\1/' bit.
+unset coverfile
+glyrc cover -v 0 -a "$(pwd | awk -F \/ '{ print $(NF-1) }')" -b "$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/')" -w "cover.jpg"
+coverfile=cover.jpg
+fi
+#
+## Check Size ##
+#
+# Maximum file size (in KB) for cover artwork: (Default: 100k)
+maxsize=100
+coversize=$(du -k $coverfile | cut -f 1)
+# If the existing cover image is larger than 100k then it is resized as to not be so big (the image is embedded in to each .mp3 which is why we don't want to just stick any ol' thing in there.
+if [ $coversize -ge $maxsize ] ; then
+convert $coverfile -resize 500x500 cover_thumb.jpg
+unset coverfile
+coverfile=cover_thumb.jpg
+fi
+#
+## Create ID3 Tag
+#
+# Adds the cover image to all .mp3 files in the directory.
+eyeD3 --add-image=$coverfile:FRONT_COVER *.mp3

@@ -1,0 +1,2 @@
+#!/bin/bash
+for x in "$@" ; do y=`echo -n "$x" | sed 's/\ /\-/1' | sed 's/.mp3/\ mp3/g' | titlecase.py | sed 's/\-/\ /1' | sed 's/^[ \t]*//;s/[ \t]*$//' | sed 's/\ Mp3/.mp3/g'` ; mv "$x" "$y" ; done
