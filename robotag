@@ -1,0 +1,125 @@
+#!/bin/bash
+#
+# ed3-folder
+# By: Brian Carter
+# robotmachine@gmail.com
+#
+# Writes id3 tags.
+#
+## Dependencies.
+# * eyeD3 <http://eyed3.nicfit.net>
+#
+# This script expects all artists to be contained within their own directory.
+# ie. /home/robot/Music/Artist
+#
+# Within each folder should be a new directory per album with the release year prepended.
+# ie. /home/robot/Music/Artist/1978 Album Title
+#
+# Each album should contain files prepended with a two digit track number and the title of the track.
+# ie. /home/robot/Music/Artist/1978 Album Title/01 First Track.mp3
+# An _ will be converted to a / and a ¿ will be converted to ?
+#
+# In the event of a multi-disc set, the format would be:
+# 01-01 First Track of First Disc.mp3
+# 02-03 Third Track of Second Disc.mp3
+#
+# Within each artist folder a file named .genre.txt containing a single line for a genre will be used.
+# If no such file is present, then a genre will be requested interactively.
+# Alternatively, an argument can be passed to set the genre: $> ed3-folder "The Genre"
+#
+#
+## Unsets variables
+unset GENRE ARTIST ALBUM DISC DISCS YEAR
+#
+## Deletes id3 tags on all mp3 files in the current directory.
+eyeD3 --remove-all *.mp3 >/dev/null 2>&1
+#
+## Prefers using a .genre.txt file in the artist folder. If that does not exist, then
+## run the script as `robotags Genre even with spaces`. The genre will be set as that variable.
+if [ -f ../.genre.txt ] ; then
+GENRE=$(head -n 1 ../.genre.txt)
+else GENRE="$@"
+fi
+#
+## Uses the artist directory name to set artist name. 
+##(See top of file for directory structure notes)
+ARTIST="$(pwd | awk -F \/ '{ print $(NF-1) }')"
+#
+# Takes out the year from the album directory and removes the year to set album title.
+# (See top of file for directory structure notes)
+ALBUM="$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g')"
+#
+# Cuts the first four digits from the album directory for the year.
+# Prefers .year.txt if it exists.
+if [ -f .year.txt ] ; then
+YEAR="$(head -n 1 .year.txt)"
+else YEAR="$(pwd | awk -F \/ '{ print $NF }' | cut -c 1-4)"
+fi
+#
+#
+# Writes the tags using above variables.
+# Determines track number, total number of tracks, title, disc number, and total number of discs.
+#
+if [ -f 10-01\ *.mp3 ] ; then
+DISC=10
+DISCS=$DISC
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 09-01\ *.mp3 ]; then
+DISC=09
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 08-01\ *.mp3 ]; then
+DISC=08
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 07-01\ *.mp3 ]; then
+DISC=07
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 06-01\ *.mp3 ]; then
+DISC=06
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 05-01\ *.mp3 ]; then
+DISC=05
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 04-01\ *.mp3 ]; then
+DISC=04
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 03-01\ *.mp3 ]; then
+DISC=03
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 02-01\ *.mp3 ]; then
+DISC=02
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 01-01\ *.mp3 ]; then
+DISC=01
+if [[ -z $DISCS ]] ; then DISCS=$DISC ; fi
+x="1" && z="$(ls -l $DISC-*.mp3 | wc -l | tr -d ' ')"; for y in $DISC-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d "$DISC" -D "$DISCS" "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
+#
+if [ -f 01\ *.mp3 ]; then
+x="1" && z="$(ls -l *.mp3 | wc -l | tr -d ' ')"; for y in *.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d 01 -D 01 "$y" >/dev/null 2>&1; x=$[$x+1]; done
+fi
