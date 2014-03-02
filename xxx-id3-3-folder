@@ -1,0 +1,16 @@
+#!/bin/bash
+
+id3v2 -D *.mp3
+id3v2 --TCON "$1" *.mp3
+id3v2 --TPE1 "`pwd | awk -F \/ '{ print $5 }'`" *.mp3
+id3v2 --TALB "`pwd | awk -F \/ '{ print $6 }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g'`" *.mp3
+id3v2 --TYER "`pwd | awk -F \/ '{ print $6 }' | cut -c 1-4`" *.mp3
+x="1" && z="`ls -l 01-*.mp3 | wc -l`"; for y in 01-*.mp3; do `id3v2 --TRCK "$x/$z" "$y"`; x=$[$x+1]; done
+x="1" && z="`ls -l 02-*.mp3 | wc -l`"; for y in 02-*.mp3; do `id3v2 --TRCK "$x/$z" "$y"`; x=$[$x+1]; done
+x="1" && z="`ls -l 03-*.mp3 | wc -l`"; for y in 03-*.mp3; do `id3v2 --TRCK "$x/$z" "$y"`; x=$[$x+1]; done
+for x in 01-*.mp3; do y=`echo $x | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g'`; id3v2 --TIT2 "$y" "$x"; done
+for x in 02-*.mp3; do y=`echo $x | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g'`; id3v2 --TIT2 "$y" "$x"; done
+for x in 03-*.mp3; do y=`echo $x | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g'`; id3v2 --TIT2 "$y" "$x"; done
+for x in 01-*.mp3; do id3v2 --TPOS "01/03" "$x"; done
+for x in 02-*.mp3; do id3v2 --TPOS "02/03" "$x"; done
+for x in 03-*.mp3; do id3v2 --TPOS "03/03" "$x"; done
