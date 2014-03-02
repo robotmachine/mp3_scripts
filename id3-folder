@@ -28,9 +28,7 @@
 # Alternatively, an argument can be passed to set the genre: $> ed3-folder "The Genre"
 #
 # Deletes id3 tags on all mp3 files in the current directory.
-echo -ne "[##------------------] (10%) \r"
 eyeD3 --remove-all *.mp3 >/dev/null 2>&1
-echo -ne "[####----------------] (20%) \r"
 #
 # Run the script as id3-folder Genre. The genre will be set as that variable.
 if [ -f ../.genre.txt ] ; then
@@ -52,18 +50,17 @@ if [ -f .year.txt ] ; then
 YEAR="$(head -n 1 .year.txt)"
 else YEAR="$(pwd | awk -F \/ '{ print $NF }' | cut -c 1-4)"
 fi
-echo -ne "[######--------------] (30%) \r"
 #
 #
 # Writes the tags using above variables.
 # Determines track number, total number of tracks, title, disc number, and total number of discs.
 #
 if [ -f 10-01\ *.mp3 ] ; then
+DISCS=10
 #
 ## Ten discs.
 #
 x="1" && z="$(ls -l 01-*.mp3 | wc -l | tr -d ' ')"; for y in 01-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d 01 -D 10 "$y" >/dev/null 2>&1; x=$[$x+1]; done
-echo -ne "[###########---------] (50%) \r"
 x="1" && z="$(ls -l 02-*.mp3 | wc -l | tr -d ' ')"; for y in 02-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d 02 -D 10 "$y" >/dev/null 2>&1; x=$[$x+1]; done
 echo -ne "[############--------] (55%) \r"
 x="1" && z="$(ls -l 03-*.mp3 | wc -l | tr -d ' ')"; for y in 03-*.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d 03 -D 10 "$y" >/dev/null 2>&1; x=$[$x+1]; done
