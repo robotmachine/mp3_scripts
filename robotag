@@ -1,10 +1,14 @@
 #!/bin/bash
 #
-# ed3-folder
-# By: Brian Carter
-# robotmachine@gmail.com
+##########################
+#       robotag          #
+#    By: Brian Carter    #
+# robotmachine@gmail.com #
+##########################
 #
-# Writes id3 tags.
+# Creates ID3 tags based
+# directory structure, file
+# names, and more.
 #
 ## Dependencies.
 # * eyeD3 <http://eyed3.nicfit.net>
@@ -20,12 +24,11 @@
 # An _ will be converted to a / and a ¿ will be converted to ?
 #
 # In the event of a multi-disc set, the format would be:
-# 01-01 First Track of First Disc.mp3
-# 02-03 Third Track of Second Disc.mp3
+# 01-01 Title of the First Track of the First Disc.mp3
+# 02-03 Title of the Third Track of the Second Disc.mp3
 #
 # Within each artist folder a file named .genre.txt containing a single line for a genre will be used.
-# If no such file is present, then a genre will be requested interactively.
-# Alternatively, an argument can be passed to set the genre: $> ed3-folder "The Genre"
+# Alternatively, an argument can be passed to set the genre: `robotag The Genre`
 #
 #
 ## Unsets variables
@@ -35,7 +38,7 @@ unset GENRE ARTIST ALBUM DISC DISCS YEAR
 eyeD3 --remove-all *.mp3 >/dev/null 2>&1
 #
 ## Prefers using a .genre.txt file in the artist folder. If that does not exist, then
-## run the script as `robotags Genre even with spaces`. The genre will be set as that variable.
+## run the script as `robotags Genre even with spaces` 
 if [ -f ../.genre.txt ] ; then
 GENRE=$(head -n 1 ../.genre.txt)
 else GENRE="$@"
