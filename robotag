@@ -55,7 +55,10 @@ fi
 #
 # Takes out the year from the album directory and removes the year to set album title.
 # (See top of file for directory structure notes)
-ALBUM="$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g')"
+if [ -f .album.txt ; then
+ALBUM=$(head -n 1 .album.txt)
+else ALBUM="$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g')"
+fi
 #
 # Cuts the first four digits from the album directory for the year.
 # Prefers .year.txt if it exists.
