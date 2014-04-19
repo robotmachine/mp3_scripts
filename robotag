@@ -137,3 +137,4 @@ fi
 #
 eyeD3 --to-v2.3 *.mp3
 eyeD3 --to-v1.1 *.mp3
+id3-cover
