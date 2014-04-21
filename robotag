@@ -135,6 +135,6 @@ if [ -f 01\ *.mp3 ]; then
 x="1" && z="$(ls -l *.mp3 | wc -l | tr -d ' ')"; for y in *.mp3; do eyeD3 --itunes --set-encoding=utf8 -a "$ARTIST" -A "$ALBUM" -G "$GENRE" -Y "$YEAR" -t "$(echo $y | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$z" -d 01 -D 01 "$y"; x=$[$x+1]; done
 fi
 #
-eyeD3 --to-v2.3 *.mp3
-eyeD3 --to-v1.1 *.mp3
+for x in *.mp3 ; do eyeD3 --to-v2.3 "$x"
+for x in *.mp3 ; do eyeD3 --to-v1.1 "$x"
 id3-cover
