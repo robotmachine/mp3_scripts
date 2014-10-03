@@ -7,7 +7,15 @@
 #                        ##########################
 #
 ## Creates clean id3 tags based on directory structure, file names, and more!
-## Dependencies: eyeD3 <http://eyed3.nicfit.net> (Tested with eyeD3 version 0.7.5-final)
+## Dependencies: 
+## * eyeD3 <http://eyed3.nicfit.net> (Tested with eyeD3 version 0.7.5-final)
+## * Image Magick <http://imagemagick.org>
+## * glyr <http://github.com/sahib/glyr>
+#
+## MP3s can be anywhere in the file system, but the script is looking for a structure like this:
+## $MP3_ROOT/Artist Name/YYYY Title of Album/DD-TT Track Name.mp3
+## YYYY is the four digit release year. DD is the two digit disc number. TT is the two digit track number. If there is only one disc, then "TT Track Name.mp3" is fine.
+## /home/robot/music/Radiohead/2007 In Rainbows/02-05 Last Flowers.mp3
 #
 ## Unset variables
 unset GENRE ARTIST DISC DISCS YEAR COUNTRY MULTID MAXDISC
