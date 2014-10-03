@@ -12,6 +12,7 @@
 #
 ## Dependencies.
 # * eyeD3 <http://eyed3.nicfit.net>
+# * Tested with eyeD3 version 0.7.5-final
 #
 # This script expects all artists to be contained within their own directory.
 # ie. /home/robot/Music/Artist
