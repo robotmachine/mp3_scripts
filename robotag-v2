@@ -1,0 +1,85 @@
+#!/bin/bash
+#
+##########################
+#      robotag v.2       #
+#    By: Brian Carter    #
+# robotmachine@gmail.com #
+##########################
+#
+# Creates clean id3 tags based on directory structure, file names, and more!
+#
+# Dependencies:
+# eyeD3 <http://eyed3.nicfit.net> (Tested with eyeD3 version 0.7.5-final)
+#
+# Blah blah about directory structure goes here.
+#
+# Unset variables
+unset GENRE ARTIST DISC DISCS YEAR COUNTRY MULTID MAXDISC
+#
+## Prefers using a .genre.txt file in the artist folder. If that does not exist, then
+## run the script as `robotags Genre even with spaces` 
+if [[ -f ../.genre.txt ]] ; then
+GENRE=$(head -n 1 ../.genre.txt)
+else GENRE="$@"
+fi
+#
+## Uses the artist directory name to set artist name. 
+## (See top of file for directory structure notes)
+if [[ -f .artist.txt ]] ; then 
+ARTIST=$(head -n 1 .artist.txt)
+elif [[ -f ../.artist.txt ]] ; then
+ARTIST=$(head -n 1 ../.artist.txt)
+else ARTIST="$(pwd | awk -F \/ '{ print $(NF-1) }')"
+fi
+#
+## Checks for an Album Artist file (.albumartist.txt)
+if [[ -f .albumartist.txt ]] ; then
+ALBUMARTIST=$(head -n 1 .albumartist.txt)
+else ALBUMARTIST=$ARTIST
+fi
+#
+## Takes out the year from the album directory and removes the year to set album title.
+## (See top of file for directory structure notes)
+if [[ -f .album.txt ]] ; then
+ALBUM=$(head -n 1 .album.txt)
+else ALBUM="$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g')"
+fi
+## Cuts the first four digits from the album directory for the year.
+## Prefers .year.txt if it exists.
+if [[ -f .year.txt ]] ; then
+YEAR="$(head -n 1 .year.txt)"
+else YEAR="$(pwd | awk -F \/ '{ print $NF }' | cut -c 1-4)"
+fi
+## If a country file exists, it will be used to make a comment.
+if [[ -f ../.country.txt ]] ; then
+COUNTRY=$(head -n 1 ../.country.txt)
+fi
+## Checks to see if the current album has more than one disc.
+MULTICHECK=$(find *.mp3 -print -quit)
+if [ "$(echo ${MULTICHECK:2:1})" == "-" ] ; then
+MULTID=true
+else MULTID=false
+fi
+#
+## Clears all existing id3 tags
+eyeD3 --remove-all *.mp3
+#
+## If there is only one disc, then we can stop here and write tags.
+if ! $MULTID ; then
+x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"; for MP3 in *.mp3; do eyeD3 --fs-encoding=utf8 -a "$ARTIST" -b $ALBUMARTIST -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -c "Based in $COUNTRY" -t "$(echo $y | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d 01 -D 01 "$MP3"; x=$[$x+1]; done
+exit
+fi
+#
+## Sets max disc number based on number present.
+if $MULTID ; then
+DISCARRAY=() ; for x in *.mp3 ; do DISCARRAY+=($(echo ${x:0:2})) ; done ; IFS=$'\n' ; MAXDISC=$(echo "${DISCARRAY[*]}" | sort -n | tail -1)
+fi
+#
+DISC=$MAXDISC
+while [[ "$DISC" -gt 0 ]] ; do 
+x="1" && TOTALTRACK="$(ls -l $(printf "%02d\n" $DISC)-*.mp3 | wc -l | tr -d ' ')" 
+for MP3 in $(printf "%02d\n" $DISC)-*.mp3 ; do 
+eyeD3 --fs-encoding=utf8 -a "$ARTIST" -b "$ALBUMARTIST" -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -c "Based in $COUNTRY" -t "$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d "$DISC" -D "$MAXDISC" "$MP3" ; x=$[$x+1] 
+done
+DISC=$[$DISC-1]
+done
