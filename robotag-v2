@@ -48,10 +48,12 @@ if [[ ! "$COVERFILE" ]] ; then unset COVERFILE ; glyrc cover -v 0 -a "$ARTIST" -
 MAXSIZE=100 ; COVERSIZE=$(du -k $COVERFILE | cut -f 1) ; if [[ $COVERSIZE -ge $MAXSIZE ]] ; then convert $COVERFILE -resize 500x500 cover_thumb.jpg ; unset COVERFILE ; COVERFILE=cover_thumb.jpg ; fi
 #
 ## Clears all existing id3 tags
-eyeD3 --remove-all *.mp3
+echo "Removing existing tags..."
+eyeD3 --remove-all -Q *.mp3
+echo "Existing tags removed."
 #
 ## If there is only one disc, then we can stop here and write tags.
-if ! $MULTID ; then x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"; for MP3 in *.mp3; do eyeD3 --fs-encoding=utf8 -a "$ALBUMARTIST" -b "$ARTIST" -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -c "Based in $COUNTRY" -t "$(echo $y | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d 01 -D 01 --add-image=$COVERFILE:FRONT_COVER "$MP3"; x=$[$x+1]; done ; exit ; fi
+if ! $MULTID ; then x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"; for MP3 in *.mp3; do eyeD3 --fs-encoding=utf8 -a "$ALBUMARTIST" -b "$ARTIST" -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -c "Based in $COUNTRY" -t "$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d 01 -D 01 --add-image=$COVERFILE:FRONT_COVER "$MP3"; x=$[$x+1]; done ; exit ; fi
 #
 ## Sets max disc number based on number present.
 if $MULTID ; then DISCARRAY=() ; for x in *.mp3 ; do DISCARRAY+=($(echo ${x:0:2})) ; done ; IFS=$'\n' ; MAXDISC=$(echo "${DISCARRAY[*]}" | sort -n | tail -1) ; fi
