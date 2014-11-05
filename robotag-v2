@@ -66,3 +66,6 @@ eyeD3 --fs-encoding=utf8 -a "$ALBUMARTIST" -b "$ARTIST" -A "$ALBUM" -G "$GENRE" 
 done
 DISC=$[$DISC-1]
 done
+#
+## Adds v1.1 tags (for older players)
+eyeD3 --to-v1.1 *.mp3
