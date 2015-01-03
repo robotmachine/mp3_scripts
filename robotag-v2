@@ -45,7 +45,7 @@ MULTICHECK=$(find *.mp3 -print -quit) ; if [ "$(echo ${MULTICHECK:2:1})" == "-" 
 COVERFILE=$(find {cover,folder}.{jpg,png,gif} -print -quit)
 ## Uses glyr to search the internet and download a cover if one isn't there. Comment this line out if you don't want this to happen.
 if [[ ! "$COVERFILE" ]] ; then unset COVERFILE ; glyrc cover -v 0 -a "$ARTIST" -b "$ALBUM" -w cover.jpg ; COVERFILE=cover.jpg ; fi
-MAXSIZE=100 ; COVERSIZE=$(du -k $COVERFILE | cut -f 1) ; if [[ $COVERSIZE -ge $MAXSIZE ]] ; then convert $COVERFILE -resize 500x500 cover_thumb.jpg ; unset COVERFILE ; COVERFILE=cover_thumb.jpg ; fi
+MAXSIZE=100 ; COVERSIZE=$(du -k $COVERFILE | cut -f 1) ; if [[ $COVERSIZE -ge $MAXSIZE ]] ; then convert $COVERFILE -resize 500x500 .cover_thumb.jpg ; unset COVERFILE ; COVERFILE=.cover_thumb.jpg ; fi
 #
 ## Clears all existing id3 tags
 echo "Removing existing tags..."
