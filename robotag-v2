@@ -21,7 +21,8 @@
 unset GENRE ARTIST DISC DISCS YEAR COUNTRY MULTID MAXDISC
 #
 ## Setting Genre.
-if [[ -f ../.genre.txt ]] ; then GENRE=$(head -n 1 ../.genre.txt) ; else GENRE="$@"; fi
+if [[ -f .genre.txt ]] ; then GENRE=$(head -n 1 .genre.txt) ; elif [[ -f ../.genre.txt ]] ; then GENRE=$(head -n 1 ../.genre.txt) ; else GENRE="$@" ; fi
+# if [[ -f ../.genre.txt ]] ; then GENRE=$(head -n 1 ../.genre.txt) ; else GENRE="$@"; fi
 #
 ## Set artist name.
 if [[ -f .artist.txt ]] ; then ARTIST=$(head -n 1 .artist.txt) ;  elif [[ -f ../.artist.txt ]] ; then ARTIST=$(head -n 1 ../.artist.txt) ; else ARTIST="$(pwd | awk -F \/ '{ print $(NF-1) }')" ; fi
