@@ -1,2 +1,0 @@
-#!/bin/bash
-for x in *.mp3; do y=`echo $x | sed 's/...\(.*\)/\1/' | sed 's/.mp3//ig'`; id3v2 -2 --TIT2 "$y" "$x"; done
