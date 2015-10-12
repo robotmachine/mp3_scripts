@@ -68,12 +68,6 @@ else
 	ALBUM="$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g')"
 fi
 #
-## Sets country.
-if [[ -f ../.country.txt ]] ; then
-	COUNTRY=$(echo -n "Based in "
-	head -n 1 ../.country.txt)
-fi
-#
 ## Checks to see if the current album has more than one disc.
 MULTICHECK=$(find *.mp3 -print -quit)
 if [ "$(echo ${MULTICHECK:2:1})" == "-" ] ; then 
@@ -113,7 +107,6 @@ if ! $MULTID ; then
 			-A "$ALBUM" \
 			-G "$GENRE" \
 			--recording-date "$YEAR" \
-			-c "$COUNTRY" \
 			-t "$TNAME" \
 			-n "$x" \
 			-N "$TOTALTRACK" \
@@ -132,7 +125,7 @@ DISC=$MAXDISC
 while [[ "$DISC" -gt 0 ]] ; do 
 x="1" && TOTALTRACK="$(ls -l $(printf "%02d\n" $DISC)-*.mp3 | wc -l | tr -d ' ')" 
 for MP3 in $(printf "%02d\n" $DISC)-*.mp3 ; do 
-eyeD3 --fs-encoding=utf8 -a "$ALBUMARTIST" -b "$ARTIST" -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -c "Based in $COUNTRY" -t "$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d "$DISC" -D "$MAXDISC" --add-image=$COVERFILE:FRONT_COVER "$MP3" ; x=$[$x+1] 
+eyeD3 --fs-encoding=utf8 -a "$ALBUMARTIST" -b "$ARTIST" -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -t "$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d "$DISC" -D "$MAXDISC" --add-image=$COVERFILE:FRONT_COVER "$MP3" ; x=$[$x+1] 
 done
 DISC=$[$DISC-1]
 done
