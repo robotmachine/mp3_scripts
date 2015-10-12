@@ -29,28 +29,57 @@ if [[ -f .genre.txt ]] ; then
 	GENRE=$(head -n 1 .genre.txt)
 elif [[ -f ../.genre.txt ]] ; then 
 	GENRE=$(head -n 1 ../.genre.txt)
-else GENRE="$@"
+else 
+	GENRE="$@"
 fi
 #
 ## Set artist name.
-if [[ -f .artist.txt ]] ; then ARTIST=$(head -n 1 .artist.txt) ;  elif [[ -f ../.artist.txt ]] ; then ARTIST=$(head -n 1 ../.artist.txt) ; else ARTIST="$(pwd | awk -F \/ '{ print $(NF-1) }')" ; fi
+if [[ -f .artist.txt ]] ; then 
+	ARTIST=$(head -n 1 .artist.txt)
+elif [[ -f ../.artist.txt ]] ; then
+	ARTIST=$(head -n 1 ../.artist.txt)
+else 
+	ARTIST="$(pwd | awk -F \/ '{ print $(NF-1) }')"
+fi
 #
 ## Set album artist to artist unless an album artist file exists.
-if [[ -f .albumartist.txt ]] ; then ALBUMARTIST=$(head -n 1 .albumartist.txt) ; else ALBUMARTIST=$ARTIST ; fi
+if [[ -f .albumartist.txt ]] ; then 
+	ALBUMARTIST=$(head -n 1 .albumartist.txt)
+else 
+	ALBUMARTIST=$ARTIST
+fi
 #
 ## Sets year.
+if [[ -f .year.txt ]] ; then
+	YEAR="$(head -n 1 .year.txt)"
+else 
+	YEAR="$(pwd | awk -F \/ '{ print $NF }' | cut -c 1-4)"
+fi 
 ## If the year is 0000 based on the folder name or .year.txt file it will unset it (for unsorted or non-album tracks)
-if [[ -f .year.txt ]] ; then YEAR="$(head -n 1 .year.txt)" ; else YEAR="$(pwd | awk -F \/ '{ print $NF }' | cut -c 1-4)" ; fi 
-if [[ "$YEAR" = "0000" ]] ; then unset YEAR ; fi
+if [[ "$YEAR" = "0000" ]] ; then 
+	unset YEAR
+fi
 #
 ## Set album title.
-if [[ -f .album.txt ]] ; then ALBUM=$(head -n 1 .album.txt) ; else ALBUM="$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g')" ; fi
+if [[ -f .album.txt ]] ; then 
+	ALBUM=$(head -n 1 .album.txt)
+else
+	ALBUM="$(pwd | awk -F \/ '{ print $NF }' | sed 's/.....\(.*\)/\1/' | sed 's@_@/@g' | sed 's/¿/?/g')"
+fi
 #
 ## Sets country.
-if [[ -f ../.country.txt ]] ; then COUNTRY=$(echo -n "Based in " ; head -n 1 ../.country.txt) ; fi
+if [[ -f ../.country.txt ]] ; then
+	COUNTRY=$(echo -n "Based in "
+	head -n 1 ../.country.txt)
+fi
 #
 ## Checks to see if the current album has more than one disc.
-MULTICHECK=$(find *.mp3 -print -quit) ; if [ "$(echo ${MULTICHECK:2:1})" == "-" ] ; then MULTID=true ; else MULTID=false ; fi
+MULTICHECK=$(find *.mp3 -print -quit)
+if [ "$(echo ${MULTICHECK:2:1})" == "-" ] ; then 
+	MULTID=true
+else
+	MULTID=false
+fi
 #
 ## Checks for album art in folder.
 COVERFILE=$(find {cover,folder}.{jpg,png,gif} -print -quit)
