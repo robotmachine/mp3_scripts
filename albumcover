@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Uses https://github.com/sahib/glyr to download an album cover.
-# The expected directory structure is
-# /home/audio/artist_name/YYYY album_name/
-# Where YYYY is the release year.
-
-glyrc cover -a "`pwd | awk -F \/ '{ print $5 }'`" -b "`pwd | awk -F \/ '{ print $6 }' | sed 's/.....\(.*\)/\1/'`" -w ./cover.jpg

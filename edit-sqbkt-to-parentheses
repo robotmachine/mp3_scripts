@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# I used to always use square brackets instead of parenthesis with my mp3s.
-# I don't now. This was for fixing that mistake in a lot of filenames in a hurry.
-
-for x in *; do y=`echo $x | sed 's/\[/(/g' | sed 's/\]/)/g'`; mv "$x" "$y"; done

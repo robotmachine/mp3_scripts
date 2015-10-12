@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for x in *.flac
-do
-OUTFILE=$(echo "$x" | sed 's/.flac/.mp3/g')
-flac -c -d "$x" | lame -m j -q 0 --vbr-new -V 0 -s 44.1 - "$OUTFILE"
-done

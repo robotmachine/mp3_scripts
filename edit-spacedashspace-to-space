@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Converts " - " to " "
-# Mainly used for .mp3 cos people like to use 01 - Track Name.mp3 and I prefer 01 Track Name.mp3
-
-for x in *; do y=`echo $x | sed 's/\ \-\ /\ /g'`; mv "$x" "$y"; done
