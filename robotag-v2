@@ -20,9 +20,17 @@
 ## Unset variables
 unset GENRE ARTIST DISC DISCS YEAR COUNTRY MULTID MAXDISC
 #
+## Set Encoding
+ENC='utf8'
 ## Setting Genre.
-if [[ -f .genre.txt ]] ; then GENRE=$(head -n 1 .genre.txt) ; elif [[ -f ../.genre.txt ]] ; then GENRE=$(head -n 1 ../.genre.txt) ; else GENRE="$@" ; fi
-# if [[ -f ../.genre.txt ]] ; then GENRE=$(head -n 1 ../.genre.txt) ; else GENRE="$@"; fi
+## Looks in the current directory for '.genre.txt' and then in the next folder up. If neither exists then everything entered as an argument is used.
+## ie. `robotag Trip Hop` would set $GENRE to 'Trip Hop'
+if [[ -f .genre.txt ]] ; then 
+	GENRE=$(head -n 1 .genre.txt)
+elif [[ -f ../.genre.txt ]] ; then 
+	GENRE=$(head -n 1 ../.genre.txt)
+else GENRE="$@"
+fi
 #
 ## Set artist name.
 if [[ -f .artist.txt ]] ; then ARTIST=$(head -n 1 .artist.txt) ;  elif [[ -f ../.artist.txt ]] ; then ARTIST=$(head -n 1 ../.artist.txt) ; else ARTIST="$(pwd | awk -F \/ '{ print $(NF-1) }')" ; fi
@@ -31,6 +39,7 @@ if [[ -f .artist.txt ]] ; then ARTIST=$(head -n 1 .artist.txt) ;  elif [[ -f ../
 if [[ -f .albumartist.txt ]] ; then ALBUMARTIST=$(head -n 1 .albumartist.txt) ; else ALBUMARTIST=$ARTIST ; fi
 #
 ## Sets year.
+## If the year is 0000 based on the folder name or .year.txt file it will unset it (for unsorted or non-album tracks)
 if [[ -f .year.txt ]] ; then YEAR="$(head -n 1 .year.txt)" ; else YEAR="$(pwd | awk -F \/ '{ print $NF }' | cut -c 1-4)" ; fi 
 if [[ "$YEAR" = "0000" ]] ; then unset YEAR ; fi
 #
@@ -55,7 +64,26 @@ eyeD3 --remove-all -Q *.mp3
 echo "Existing tags removed."
 #
 ## If there is only one disc, then we can stop here and write tags.
-if ! $MULTID ; then x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"; for MP3 in *.mp3; do eyeD3 --fs-encoding=utf8 -a "$ALBUMARTIST" -b "$ARTIST" -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -c "$COUNTRY" -t "$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d 01 -D 01 --add-image=$COVERFILE:FRONT_COVER "$MP3"; x=$[$x+1]; done ; exit ; fi
+if ! $MULTID ; then 
+	x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"
+	for MP3 in *.mp3; do 
+		eyeD3 --fs-encoding="$ENC" \
+			-a "$ALBUMARTIST" \
+			-b "$ARTIST" \
+			-A "$ALBUM" \
+			-G "$GENRE" \
+			--recording-date "$YEAR" \
+			-c "$COUNTRY" \
+			-t "$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" \
+			-n "$x" \
+			-N "$TOTALTRACK" \
+			-d 01 \
+			-D 01 \
+			--add-image=$COVERFILE:FRONT_COVER "$MP3"
+		x=$[$x+1]
+		done 
+	exit 
+fi
 #
 ## Sets max disc number based on number present.
 if $MULTID ; then DISCARRAY=() ; for x in *.mp3 ; do DISCARRAY+=($(echo ${x:0:2})) ; done ; IFS=$'\n' ; MAXDISC=$(echo "${DISCARRAY[*]}" | sort -n | tail -1) ; fi
