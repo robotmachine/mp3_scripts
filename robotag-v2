@@ -22,6 +22,7 @@ unset GENRE ARTIST DISC DISCS YEAR COUNTRY MULTID MAXDISC
 #
 ## Set Encoding
 ENC='utf8'
+#
 ## Setting Genre.
 ## Looks in the current directory for '.genre.txt' and then in the next folder up. If neither exists then everything entered as an argument is used.
 ## ie. `robotag Trip Hop` would set $GENRE to 'Trip Hop'
@@ -81,6 +82,11 @@ else
 	MULTID=false
 fi
 #
+## Creates array for track names if .tracks.txt exists
+## The .tracks.txt file must include one line per track that matches the track number of the respective mp3 file
+if  [[ -f .tracks.txt ]] ; then
+	mapfile -t TRACKS < .tracks.txt
+fi
 ## Checks for album art in folder.
 COVERFILE=$(find {cover,folder}.{jpg,png,gif} -print -quit)
 ## Uses glyr to search the internet and download a cover if one isn't there. Comment this line out if you don't want this to happen.
@@ -96,6 +102,11 @@ echo "Existing tags removed."
 if ! $MULTID ; then 
 	x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"
 	for MP3 in *.mp3; do 
+		if [[ ! $TRACKS ]] ; then
+			TNAME=$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
+		else
+			TNAME=${TRACKS[$x]}
+		fi
 		eyeD3 --fs-encoding="$ENC" \
 			-a "$ALBUMARTIST" \
 			-b "$ARTIST" \
@@ -103,7 +114,7 @@ if ! $MULTID ; then
 			-G "$GENRE" \
 			--recording-date "$YEAR" \
 			-c "$COUNTRY" \
-			-t "$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" \
+			-t "$TNAME" \
 			-n "$x" \
 			-N "$TOTALTRACK" \
 			-d 01 \
