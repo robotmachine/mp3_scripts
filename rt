@@ -115,7 +115,17 @@ if ! $MULTID ; then
 		if [[ ! $TRACKS ]] ; then
 			TNAME=$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
 		else
-			TNAME=${TRACKS[$x]}
+			TNAME=${TRACKS[$(eval $x-1]}
+		fi
+		if [[ -e .anames01.txt ]]; then
+			mapfile -t ANARR < .anames01.txt
+		fi
+		if [[ $ANARR ]] ; then
+			if [[ ${ANARR[$(expr $x-1)]} != 'NA' ]] ; then
+				ALBUMARTIST="$ARTIST ${ANARR[$(expr $x-1)]}"
+			else
+				ALBUMARTIST=$ARTIST
+			fi
 		fi
 		eyeD3 --fs-encoding="$ENC" \
 			-a "$ALBUMARTIST" \
@@ -155,7 +165,7 @@ while [[ "$DISC" -gt 0 ]] ; do
 		if [[ ! $TRACKS ]] ; then
 			TNAME=$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
 		else
-			TNAME=${TRACKS[$x]}
+			TNAME=${TRACKS[$(eval $x-1)]}
 		fi
 		eyeD3 --fs-encoding="$ENC" \
 		-a "$ALBUMARTIST" \
