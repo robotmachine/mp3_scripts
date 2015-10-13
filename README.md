@@ -31,8 +31,8 @@ Contains the artist name.
 #### .genre.txt
 Contains the genre name for the artist or album.    
 
-#### .tracks1.txt; tracksN.txt
-The title of the album tracks. The first line corresponds to the first track and so on. In the event of a multi-disc album, the metadata file should be .tracks1.txt, tracks2.txt and so on.  
+#### .tracks01.txt; tracks02.txt; &c
+The title of the album tracks. The first line corresponds to the first track and so on. In the event of a multi-disc album, the metadata file should be .tracks01.txt, tracks02.txt and so on.  
 
 Within the Artist Name folder, the following metadata files are supported:
 * .artist.txt
@@ -43,5 +43,5 @@ Within the Album Name folder, the following metadata files are supported:
 * .albumartist.txt
 * .artist.txt
 * .genre.txt
-* .tracks1.txt; tracksN.txt
+* .tracks01.txt
 * .year.txt
