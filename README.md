@@ -1,5 +1,4 @@
-# RoboTag
-## Version 3.2
+# RoboTag v.3.2
 
 ### Dependencies:
 * [eyeD3](http://eyed3.nicfit.net) v0.7.5
