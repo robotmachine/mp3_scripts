@@ -76,16 +76,26 @@ else
 	MULTID=false
 fi
 #
-## Creates array for track names if .tracks.txt exists
-## The .tracks.txt file must include one line per track that matches the track number of the respective mp3 file
-if  [[ -f .tracks.txt ]] ; then
-	mapfile -t TRACKS < .tracks.txt
-fi
 ## Checks for album art in folder.
-COVERFILE=$(find {cover,folder}.{jpg,png,gif} -print -quit)
+COVERFILE=$(find {cover,folder}.{jpeg,jpg,png,gif} -print -quit)
 ## Uses glyr to search the internet and download a cover if one isn't there. Comment this line out if you don't want this to happen.
-if [[ ! "$COVERFILE" ]] ; then unset COVERFILE ; glyrc cover -v 0 -a "$ARTIST" -b "$ALBUM" -w cover.jpg ; COVERFILE=cover.jpg ; fi
-MAXSIZE=100 ; COVERSIZE=$(du -k $COVERFILE | cut -f 1) ; if [[ $COVERSIZE -ge $MAXSIZE ]] ; then convert $COVERFILE -resize 500x500 .cover_thumb.jpg ; unset COVERFILE ; COVERFILE=.cover_thumb.jpg ; fi
+if [[ ! "$COVERFILE" ]] ; then 
+	unset COVERFILE
+	glyrc cover -v 0 -a "$ARTIST" -b "$ALBUM" -w cover.:format:
+	COVERFILE=cover.jpg
+fi
+##
+## Use ImageMagick to convert large images to smaller thumbnails.
+MAXSIZE=100
+COVERSIZE=$(du -k $COVERFILE | cut -f 1)
+if [[ $COVERSIZE -ge $MAXSIZE ]] ; then
+	convert $COVERFILE -resize 500x500 .cover_thumb.jpg
+	unset COVERFILE
+	COVERFILE=.cover_thumb.jpg
+fi
+if [[ ! -f $COVERFILE ]]; then
+	unset COVERFILE
+fi
 #
 ## Clears all existing id3 tags
 echo "Removing existing tags..."
@@ -94,8 +104,14 @@ echo "Existing tags removed."
 #
 ## If there is only one disc, then we can stop here and write tags.
 if ! $MULTID ; then 
+	
 	x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"
+	## Creates an array from .tracks1.txt if it exists
+	if [[ -e .tracks1.txt ]]; then
+		mapfile -t TRACKS < .tracks1.txt
+	fi
 	for MP3 in *.mp3; do 
+		## If $TRACKS is not set, the file name is used minus the first three characters (removing the track number)
 		if [[ ! $TRACKS ]] ; then
 			TNAME=$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
 		else
@@ -118,16 +134,44 @@ if ! $MULTID ; then
 	exit 
 fi
 #
+## If there are multiple discs, the following is done
 ## Sets max disc number based on number present.
-if $MULTID ; then DISCARRAY=() ; for x in *.mp3 ; do DISCARRAY+=($(echo ${x:0:2})) ; done ; IFS=$'\n' ; MAXDISC=$(echo "${DISCARRAY[*]}" | sort -n | tail -1) ; fi
+if $MULTID ; then 
+	DISCARRAY=()
+	for x in *.mp3 ; do
+		DISCARRAY+=($(echo ${x:0:2}))
+	done
+	IFS=$'\n'
+	MAXDISC=$(echo "${DISCARRAY[*]}" | sort -n | tail -1)
+fi
 #
 DISC=$MAXDISC
 while [[ "$DISC" -gt 0 ]] ; do 
-x="1" && TOTALTRACK="$(ls -l $(printf "%02d\n" $DISC)-*.mp3 | wc -l | tr -d ' ')" 
-for MP3 in $(printf "%02d\n" $DISC)-*.mp3 ; do 
-eyeD3 --fs-encoding=utf8 -a "$ALBUMARTIST" -b "$ARTIST" -A "$ALBUM" -G "$GENRE" --recording-date "$YEAR" -t "$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')" -n "$x" -N "$TOTALTRACK" -d "$DISC" -D "$MAXDISC" --add-image=$COVERFILE:FRONT_COVER "$MP3" ; x=$[$x+1] 
-done
-DISC=$[$DISC-1]
+	x="1" && TOTALTRACK="$(ls -l $(printf "%02d\n" $DISC)-*.mp3 | wc -l | tr -d ' ')" 
+	if [[ -e .tracks$DISC.txt ]] ; then
+		mapfile -t TRACKS < .tracks$DISC.txt
+	fi
+	for MP3 in $(printf "%02d\n" $DISC)-*.mp3 ; do 
+		if [[ ! $TRACKS ]] ; then
+			TNAME=$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
+		else
+			TNAME=${TRACKS[$x]}
+		fi
+		eyeD3 --fs-encoding="$ENC" \
+		-a "$ALBUMARTIST" \
+		-b "$ARTIST" \
+		-A "$ALBUM" \
+		-G "$GENRE" \
+		--recording-date "$YEAR" \
+		-t "$TNAME" \
+		-n "$x" \
+		-N "$TOTALTRACK" \
+		-d "$DISC" \
+		-D "$MAXDISC" \
+		--add-image=$COVERFILE:FRONT_COVER "$MP3"
+		x=$[$x+1] 
+	done
+	DISC=$[$DISC-1]
 done
 #
 ## Adds v1.1 tags (for older players)
