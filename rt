@@ -98,31 +98,32 @@ if [[ ! -f $COVERFILE ]]; then
 fi
 #
 ## Clears all existing id3 tags
-echo "Removing existing tags..."
-eyeD3 --remove-all -Q *.mp3
-echo "Existing tags removed."
+# echo "Removing existing tags..."
+# eyeD3 --remove-all -Q *.mp3
+# echo "Existing tags removed."
 #
 ## If there is only one disc, then we can stop here and write tags.
 if ! $MULTID ; then 
 	
 	x="1" && TOTALTRACK="$(ls -l *.mp3 | wc -l | tr -d ' ')"
-	## Creates an array from .tracks1.txt if it exists
-	if [[ -e .tracks1.txt ]]; then
-		mapfile -t TRACKS < .tracks1.txt
+	## Creates an array from .tracks01.txt if it exists
+	unset TRACKS
+	if [[ -e .tracks01.txt ]]; then
+		mapfile -O 1 -t TRACKS < .tracks01.txt
 	fi
 	for MP3 in *.mp3; do 
 		## If $TRACKS is not set, the file name is used minus the first three characters (removing the track number)
-		if [[ ! $TRACKS ]] ; then
+		if [[ ! ${TRACKS[$x]} ]] ; then
 			TNAME=$(echo $MP3 | sed 's/...\(.*\)/\1/' | sed 's/.mp3//g' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
-		else
-			TNAME=${TRACKS[$(eval $x-1]}
+		else 
+			TNAME=${TRACKS[$x]}
 		fi
 		if [[ -e .anames01.txt ]]; then
 			mapfile -t ANARR < .anames01.txt
 		fi
 		if [[ $ANARR ]] ; then
 			if [[ ${ANARR[$(expr $x-1)]} != 'NA' ]] ; then
-				ALBUMARTIST="$ARTIST ${ANARR[$(expr $x-1)]}"
+				ALBUMARTIST="${ANARR[$(expr $x-1)]}"
 			else
 				ALBUMARTIST=$ARTIST
 			fi
@@ -157,15 +158,27 @@ fi
 #
 DISC=$MAXDISC
 while [[ "$DISC" -gt 0 ]] ; do 
+	DISC=$(printf "%02d\n" $DISC)
 	x="1" && TOTALTRACK="$(ls -l $(printf "%02d\n" $DISC)-*.mp3 | wc -l | tr -d ' ')" 
+	unset TRACKS
 	if [[ -e .tracks$DISC.txt ]] ; then
-		mapfile -t TRACKS < .tracks$DISC.txt
+		mapfile -O 1 -t TRACKS < .tracks$DISC.txt
 	fi
 	for MP3 in $(printf "%02d\n" $DISC)-*.mp3 ; do 
-		if [[ ! $TRACKS ]] ; then
+		if [[ ! ${TRACKS[$x]} ]] ; then
 			TNAME=$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
 		else
-			TNAME=${TRACKS[$(eval $x-1)]}
+			TNAME=${TRACKS[$x]}
+		fi
+		if [[ -e .anames$DISC.txt ]]; then
+			mapfile -O 1 -t ANARR < .anames$DISC.txt
+		fi
+		if [[ ${ANARR[$x]} ]] ; then
+			if [[ ${ANARR[$x]} != 'NA' ]] ; then
+				ALBUMARTIST="${ANARR[$x]}"
+			else
+				ALBUMARTIST=$ARTIST
+			fi
 		fi
 		eyeD3 --fs-encoding="$ENC" \
 		-a "$ALBUMARTIST" \
