@@ -98,9 +98,7 @@ if [[ ! -f $COVERFILE ]]; then
 fi
 #
 ## Clears all existing id3 tags
-# echo "Removing existing tags..."
-# eyeD3 --remove-all -Q *.mp3
-# echo "Existing tags removed."
+eyeD3 --remove-all -Q *.mp3
 #
 ## If there is only one disc, then we can stop here and write tags.
 if ! $MULTID ; then 
