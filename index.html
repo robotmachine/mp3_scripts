@@ -1,0 +1,135 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on https://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="stylesheets/github-dark.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Robotag</title>
+  <meta name="description" content="Automated MP3 Tagging">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Robotag</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">Automated MP3 Tagging</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/robotmachine/robotag/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/robotmachine/robotag/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/robotmachine/robotag" class="code">View Robotag on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h3>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies:</h3>
+
+<ul>
+<li>
+<a href="http://eyed3.nicfit.net">eyeD3</a> v0.7.5</li>
+<li><a href="http://imagemagick.org">Image Magick</a></li>
+<li><a href="https://github.com/sahib/glyr">glyr</a></li>
+</ul>
+
+<h2>
+<a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How It Works</h2>
+
+<p><code>rt</code> uses file names, directory names, and metadata files to create ID3v2 tags on MP3 files. The goal is to create clean tags without unwanted junk in them without having to go full manual. As an added bonus the use of metadata files allows non Latin characters to be stored safely outside of filenames while still resulting in properly spelled tags.  </p>
+
+<p><code>rt</code> expects a directory structure where an Artist Name directory contains Album Name directories which then contain MP3 files. An example of the full path to the fifth track on the second disc of Radiohead's 2007 album "In Rainbows" would be as follows:<br>
+<code>/home/brian/music/Radiohead/2007 In Rainbows/02-05 Last Flowers.mp3</code></p>
+
+<p><code>rt</code> is run from inside the Album Name folder and will find MP3 files located within.  </p>
+
+<h2>
+<a id="metadata-files" class="anchor" href="#metadata-files" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Metadata Files</h2>
+
+<p>A metadata file inside of the Album Name folder will supersede a metadata file of the same name in the Artist Name directory. (ie. If both <code>2007 In Rainbows/.genre.txt</code> and <code>Radiohead/.genre.txt</code> exist in the example above, the data from <code>2007 In Rainbows/.genre.txt</code> will be used.<br>
+Only the first line is read for files that are only meant to contain a single value (ie. .artist.txt). Any additional data is ignored.  </p>
+
+<h4>
+<a id="albumtxt" class="anchor" href="#albumtxt" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>.album.txt</h4>
+
+<p>Contains the title of the album.  </p>
+
+<h4>
+<a id="albumartisttxt" class="anchor" href="#albumartisttxt" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>.albumartist.txt</h4>
+
+<p>Contains the name to be used in the Album Artist field.<br>
+Example usage: Thee Silver Mt. Zion Memorial Orchestra has used several different names for various releases, but you don't want them randomly sorted everywhere. Album Artist is supported by most MP3 players and will allow all releases to be sorted together, but display the right artist name for the release.  </p>
+
+<h4>
+<a id="artisttxt" class="anchor" href="#artisttxt" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>.artist.txt</h4>
+
+<p>Contains the artist name.</p>
+
+<h4>
+<a id="genretxt" class="anchor" href="#genretxt" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>.genre.txt</h4>
+
+<p>Contains the genre name for the artist or album.    </p>
+
+<h4>
+<a id="tracks01txt-tracks02txt-c" class="anchor" href="#tracks01txt-tracks02txt-c" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>.tracks01.txt; tracks02.txt; &amp;c</h4>
+
+<p>The title of the album tracks. The first line corresponds to the first track and so on. In the event of a multi-disc album, the metadata file should be .tracks01.txt, tracks02.txt and so on.  </p>
+
+<h3>
+<a id="locations" class="anchor" href="#locations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Locations</h3>
+
+<h4>
+<a id="within-the-artist-name-folder-the-following-metadata-files-are-supported" class="anchor" href="#within-the-artist-name-folder-the-following-metadata-files-are-supported" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Within the Artist Name folder, the following metadata files are supported:</h4>
+
+<ul>
+<li>.artist.txt</li>
+<li>.genre.txt</li>
+</ul>
+
+<h4>
+<a id="within-the-album-name-folder-the-following-metadata-files-are-supported" class="anchor" href="#within-the-album-name-folder-the-following-metadata-files-are-supported" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Within the Album Name folder, the following metadata files are supported:</h4>
+
+<ul>
+<li>.album.txt</li>
+<li>.albumartist.txt</li>
+<li>.artist.txt</li>
+<li>.genre.txt</li>
+<li>.tracks01.txt</li>
+<li>.year.txt</li>
+</ul>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/robotmachine" class="avatar"><img src="https://avatars1.githubusercontent.com/u/186000?v=3&amp;s=60" width="48" height="48"></a> <a href="https://github.com/robotmachine">robotmachine</a> maintains <a href="https://github.com/robotmachine/robotag">Robotag</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/robotmachine/robotag/tarball/master" class="tar">tar</a><a href="https://github.com/robotmachine/robotag/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
+</html>
