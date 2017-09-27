@@ -157,12 +157,12 @@ fi
 DISC=$MAXDISC
 while [[ "$DISC" -gt 0 ]] ; do 
 	DISC=$(printf "%02d\n" $DISC)
-	x="1" && TOTALTRACK="$(ls -l $(printf "%02d\n" $DISC)-*.mp3 | wc -l | tr -d ' ')" 
+	x="1" && TOTALTRACK="$(ls -l $(printf "%02d\n" ${DISC#0})-*.mp3 | wc -l | tr -d ' ')" 
 	unset TRACKS
 	if [[ -e .tracks$DISC.txt ]] ; then
 		mapfile -O 1 -t TRACKS < .tracks$DISC.txt
 	fi
-	for MP3 in $(printf "%02d\n" $DISC)-*.mp3 ; do 
+	for MP3 in $(printf "%02d\n" ${DISC#0})-*.mp3 ; do 
 		if [[ ! ${TRACKS[$x]} ]] ; then
 			TNAME=$(echo $MP3 | sed 's/......\(.*\)/\1/' | sed 's/.mp3//g' | sed 's@_@/@g' | sed 's/¿/?/g')
 		else
@@ -192,5 +192,5 @@ while [[ "$DISC" -gt 0 ]] ; do
 		--add-image=$COVERFILE:FRONT_COVER "$MP3"
 		x=$[$x+1] 
 	done
-	DISC=$[$DISC-1]
+	DISC=$[${DISC#0}-1]
 done
